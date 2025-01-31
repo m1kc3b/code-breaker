@@ -1,11 +1,16 @@
+mod clear;
 
 use rand;
 use std::io::stdin;
 use iocraft::prelude::*;
 
+use clear::clear_screen;
 
 #[allow(unused_variables, dead_code)]
 fn main() {
+    // Clear the screen
+    clear_screen();
+
     // Numbers of attempts
     let mut attempts = 0;
     // Generate 4 random digits - our 'secret'
@@ -22,9 +27,9 @@ fn main() {
         View(
             flex_direction: FlexDirection::Column,
             width: 500pct,
-            padding: 2,
             border_style: BorderStyle::Bold,
             border_color: main_color,
+            padding: 2,
             margin: 1,
         ) {
             View(
@@ -68,8 +73,8 @@ fn main() {
                     flex_direction: FlexDirection::Column,
                     border_style: BorderStyle::Single, 
                     border_color: orange_color,
-                    margin: 2,
-                    padding:1
+                    padding: 1,
+                    margin: 1,
                 ) {
                         Text(content: "Quitting...", color: orange_color, weight: Weight::Bold)
                         Text(content: format!("The secret was {}{}{}{}\n", secret[0], secret[1], secret[2], secret[3]), color: orange_color)
@@ -94,7 +99,7 @@ fn main() {
                     flex_direction: FlexDirection::Column,
                     border_style: BorderStyle::Single, 
                     border_color: Color::Red,
-                    margin: 2,
+                    margin: 1,
                     padding:1
                 ) {
                         Text(content: "You must enter exactly four digits (no chars or symbols)!", color: Color::Red)
@@ -117,11 +122,13 @@ fn main() {
         if result == "🟩🟩🟩🟩" {
 
             element! {
-                View(flex_direction: FlexDirection::Column,
+                View(
+                    flex_direction: FlexDirection::Column,
                     border_style: BorderStyle::Single, 
                     border_color: green_color,
-                    margin: 2,
-                    padding:1) {
+                    margin: 1,
+                    padding:1
+                ) {
                     Text(content: format!("Congratulations! You've cracked the code in {} attempts!", attempts), color: green_color)
                 }
             }.print();
