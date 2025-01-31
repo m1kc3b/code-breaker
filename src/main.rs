@@ -1,6 +1,12 @@
 
 fn main() {
-    println!("Hello, world!");
+    // TODO:
+    // Generate 4 random digits - our 'secret'
+    // Go into a loop
+    // Read a string from Standard In and trim the whitespace off it
+    // Parse that string into a guess, containing four digits (give an error if the user makes a mistake)
+    // Run the calculation routine above and print the coloured blocks
+    // Exit if all the blocks are green
 }
 
 fn calc_green_and_yellow(secret: &[u8], guess: &[u8]) -> String {
