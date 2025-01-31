@@ -2,16 +2,18 @@
 use rand;
 use std::io::stdin;
 
+#[allow(unused_variables, dead_code)]
 fn main() {
     // TODO:
     // Generate 4 random digits - our 'secret'
-    let mut secret = [0u8;4];
+    let mut secret: Vec<u8> = Vec::with_capacity(4);
     secret.fill_with(|| rand::random_range(1..=9));
 
     // Go into a loop
+    println!("Welcome to Code Breaker!");
+    println!("Guess the secret code!");
+
     loop {
-        println!("Welcome to Code Breaker!");
-        println!("Guess the secret code!");
         println!("Enter four digits (1-9)");
 
         // Read a string from Standard In and trim the whitespace off it
@@ -19,18 +21,65 @@ fn main() {
         stdin().read_line(&mut buffer).unwrap();
 
         // Parse that string into a guess, containing four digits (give an error if the user makes a mistake)
+        let guess = buffer
+            .chars()
+            .filter_map(|c| c.to_digit(10))
+            .map(|d| d as u8)
+            .collect::<Vec<u8>>();
         
+        if guess.len() != 4 {
+            println!("You must enter exactly four digits (no chars or symbols)!");
+            continue;
+        }
+        println!("You entered: {:?}", guess);
         // Run the calculation routine above and print the coloured blocks
+        let result = calc_green_and_yellow(&secret, &guess);
+        println!("{}", result);
+        
         // Exit if all the blocks are green
+        if result == "🟩🟩🟩🟩" {
+            println!("Congratulations! You've cracked the code!");
+            break;
+        } else {
+            
+        }
     }
     
 }
 
+#[allow(unused_variables, dead_code)]
 fn calc_green_and_yellow(secret: &[u8], guess: &[u8]) -> String {
-    todo!()
+    let mut result = vec!['🟥'; secret.len()];
+    let mut secret_counts = [0; 10];
+    let mut guess_counts = [0; 10];
+
+    // check for Green case
+    for (i, &digit) in guess.iter().enumerate() {
+        if secret[i] == digit {
+            result[i] = '🟩';
+            
+        } else {
+            secret_counts[secret[i] as usize] += 1;
+        }
+    }
+
+    // check for Yellow case
+    for (i, &digit) in guess.iter().enumerate() {
+        if result[i] == '🟩' {
+            continue;
+        }
+        if secret_counts[digit as usize] > guess_counts[digit as usize] {
+            result[i] = '🟨';
+            guess_counts[digit as usize] += 1;
+        }
+    }
+        
+
+    result.iter().collect::<String>()
 }
 
 mod test {
+    #[allow(unused_imports)]
     use super::*;
 
     #[test]
@@ -109,7 +158,7 @@ mod test {
     fn two_in_guess_one_in_secret() {
         assert_eq!(
             &calc_green_and_yellow(&[1, 2, 3, 3], &[3, 9, 9, 9]),
-            "🟥🟥🟨🟥"
+            "🟨🟥🟥🟥"
         );
     }
     
@@ -117,7 +166,7 @@ mod test {
     fn two_in_secret_one_in_guess() {
         assert_eq!(
             &calc_green_and_yellow(&[1, 2, 3, 4], &[3, 3, 9, 9]),
-            "🟥🟥🟨🟥"
+            "🟨🟥🟥🟥"
         );
     }
     
