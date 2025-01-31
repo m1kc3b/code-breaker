@@ -1,20 +1,55 @@
 
 use rand;
 use std::io::stdin;
+use iocraft::prelude::*;
+
 
 #[allow(unused_variables, dead_code)]
 fn main() {
-    // TODO:
+    // Numbers of attempts
+    let mut attempts = 0;
     // Generate 4 random digits - our 'secret'
     let mut secret: Vec<u8> = Vec::with_capacity(4);
-    secret.fill_with(|| rand::random_range(1..=9));
+    secret.extend((0..4).map(|_| rand::random_range(0..=9)));
 
     // Go into a loop
-    println!("Welcome to Code Breaker!");
-    println!("Guess the secret code!");
+    element! {
+        View(
+            flex_direction: FlexDirection::Column,
+            width: 500pct,
+            padding: 2,
+        ) {
+            View(
+                flex_direction: FlexDirection::Column,
+                border_style: BorderStyle::Single,
+                border_color: Color::DarkGrey,
+                border_edges: Edges::Bottom,
+                align_items: AlignItems::Center,
+                width: 100pct,
+            ) {
+                View {
+                    Text(content: "Welcome to Code Breaker!", weight: Weight::Bold)
+                }
+                Text(content: format!("Guess the secret code!"), color: Color::DarkGrey)
+            }
+        }
+    }
+    .print();
 
+    // TODO:
+    // remove this lines
+    println!("==(The secret is: {:?})==", secret);
+
+    
     loop {
-        println!("Enter four digits (1-9)");
+        element! {
+            View() {
+                View{
+                    Text(content: "Enter four digits (1-9)", weight: Weight::Bold)
+                    Text(content: " or press 'q' to quit", color: Color::DarkGrey)
+                }
+            }
+        }.print();
 
         // Read a string from Standard In and trim the whitespace off it
         let mut buffer = String::new();
@@ -27,22 +62,32 @@ fn main() {
             .map(|d| d as u8)
             .collect::<Vec<u8>>();
         
+        // handle error cases
         if guess.len() != 4 {
             println!("You must enter exactly four digits (no chars or symbols)!");
             continue;
         }
+
+        // TODO:
+        // handle quitting
+
+        // TODO: 
+        // remove this lines
         println!("You entered: {:?}", guess);
+
         // Run the calculation routine above and print the coloured blocks
         let result = calc_green_and_yellow(&secret, &guess);
         println!("{}", result);
+        println!("Attempts: {}", attempts);
         
         // Exit if all the blocks are green
         if result == "🟩🟩🟩🟩" {
-            println!("Congratulations! You've cracked the code!");
+            println!("Congratulations! You've cracked the code in {} attempts!", attempts);
             break;
         } else {
             
         }
+        attempts += 1;
     }
     
 }
