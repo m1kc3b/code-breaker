@@ -18,19 +18,18 @@ fn main() {
             flex_direction: FlexDirection::Column,
             width: 500pct,
             padding: 2,
+            border_style: BorderStyle::Bold,
+            border_color: Color::AnsiValue(171),
+            margin: 1,
         ) {
             View(
                 flex_direction: FlexDirection::Column,
-                border_style: BorderStyle::Single,
-                border_color: Color::DarkGrey,
-                border_edges: Edges::Bottom,
                 align_items: AlignItems::Center,
-                width: 100pct,
             ) {
                 View {
-                    Text(content: "Welcome to Code Breaker!", weight: Weight::Bold)
+                    Text(content: "Welcome to Code Breaker!", weight: Weight::Bold, color:Color::AnsiValue(171))
                 }
-                Text(content: format!("Guess the secret code!"), color: Color::DarkGrey)
+                Text(content: format!("Guess the secret code!"))
             }
         }
     }
@@ -45,7 +44,7 @@ fn main() {
         element! {
             View() {
                 View{
-                    Text(content: "Enter four digits (1-9)", weight: Weight::Bold)
+                    Text(content: "Enter four digits (1-9)", weight: Weight::Bold, color:Color::AnsiValue(171))
                     Text(content: " or press 'q' to quit", color: Color::DarkGrey)
                 }
             }
@@ -54,9 +53,26 @@ fn main() {
         // Read a string from Standard In and trim the whitespace off it
         let mut buffer = String::new();
         stdin().read_line(&mut buffer).unwrap();
+        let input = buffer.trim();
+
+        // TODO:
+        // handle quitting
+        if input == "q" {
+            element! {
+                View(
+                    flex_direction: FlexDirection::Column,
+                ) {
+                        Text(content: "Quitting...", color: Color::AnsiValue(166))
+                        Text(content: format!("The secret was {}{}{}{}\n", secret[0], secret[1], secret[2], secret[3]), color: Color::AnsiValue(166))
+                        Text(content: format!("You've made {} attempts\n", attempts), color: Color::AnsiValue(166))
+                        Text(content: "Goodbye 👋👋👋", color: Color::AnsiValue(166))
+                    }
+            }.print();
+            break;
+        }
 
         // Parse that string into a guess, containing four digits (give an error if the user makes a mistake)
-        let guess = buffer
+        let guess = input
             .chars()
             .filter_map(|c| c.to_digit(10))
             .map(|d| d as u8)
@@ -64,21 +80,26 @@ fn main() {
         
         // handle error cases
         if guess.len() != 4 {
-            println!("You must enter exactly four digits (no chars or symbols)!");
+            element! {
+                View() {
+                    View{
+                        Text(content: "You must enter exactly four digits (no chars or symbols)!", color: Color::Red)
+                    }
+                }
+            }.print();
             continue;
         }
 
-        // TODO:
-        // handle quitting
 
         // TODO: 
         // remove this lines
-        println!("You entered: {:?}", guess);
+        println!("You entered: {}{}{}{}", guess[0], guess[1], guess[2], guess[3]);
 
         // Run the calculation routine above and print the coloured blocks
         let result = calc_green_and_yellow(&secret, &guess);
         println!("{}", result);
-        println!("Attempts: {}", attempts);
+        attempts += 1;
+        println!("Attempts: {}\n", attempts);
         
         // Exit if all the blocks are green
         if result == "🟩🟩🟩🟩" {
@@ -87,7 +108,6 @@ fn main() {
         } else {
             
         }
-        attempts += 1;
     }
     
 }
