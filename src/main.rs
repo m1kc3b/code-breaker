@@ -12,6 +12,11 @@ fn main() {
     let mut secret: Vec<u8> = Vec::with_capacity(4);
     secret.extend((0..4).map(|_| rand::random_range(0..=9)));
 
+    // Init mainly random color
+    let main_color = Color::AnsiValue(rand::random_range(0..=255));
+    let orange_color = Color::AnsiValue(208);
+    let green_color = Color::AnsiValue(154);
+
     // Go into a loop
     element! {
         View(
@@ -19,7 +24,7 @@ fn main() {
             width: 500pct,
             padding: 2,
             border_style: BorderStyle::Bold,
-            border_color: Color::AnsiValue(171),
+            border_color: main_color,
             margin: 1,
         ) {
             View(
@@ -27,7 +32,7 @@ fn main() {
                 align_items: AlignItems::Center,
             ) {
                 View {
-                    Text(content: "Welcome to Code Breaker!", weight: Weight::Bold, color:Color::AnsiValue(171))
+                    Text(content: "Welcome to Code Breaker!", weight: Weight::Bold, color: main_color)
                 }
                 Text(content: format!("Guess the secret code!"))
             }
@@ -44,7 +49,7 @@ fn main() {
         element! {
             View() {
                 View{
-                    Text(content: "Enter four digits (1-9)", weight: Weight::Bold, color:Color::AnsiValue(171))
+                    Text(content: "Enter four digits (1-9)", weight: Weight::Bold, color: main_color)
                     Text(content: " or press 'q' to quit", color: Color::DarkGrey)
                 }
             }
@@ -61,11 +66,15 @@ fn main() {
             element! {
                 View(
                     flex_direction: FlexDirection::Column,
+                    border_style: BorderStyle::Single, 
+                    border_color: orange_color,
+                    margin: 2,
+                    padding:1
                 ) {
-                        Text(content: "Quitting...", color: Color::AnsiValue(166))
-                        Text(content: format!("The secret was {}{}{}{}\n", secret[0], secret[1], secret[2], secret[3]), color: Color::AnsiValue(166))
-                        Text(content: format!("You've made {} attempts\n", attempts), color: Color::AnsiValue(166))
-                        Text(content: "Goodbye 👋👋👋", color: Color::AnsiValue(166))
+                        Text(content: "Quitting...", color: orange_color, weight: Weight::Bold)
+                        Text(content: format!("The secret was {}{}{}{}\n", secret[0], secret[1], secret[2], secret[3]), color: orange_color)
+                        Text(content: format!("You've made {} attempts\n", attempts), color: orange_color)
+                        Text(content: "Goodbye 👋👋👋", color: orange_color)
                     }
             }.print();
             break;
@@ -81,10 +90,14 @@ fn main() {
         // handle error cases
         if guess.len() != 4 {
             element! {
-                View() {
-                    View{
+                View(
+                    flex_direction: FlexDirection::Column,
+                    border_style: BorderStyle::Single, 
+                    border_color: Color::Red,
+                    margin: 2,
+                    padding:1
+                ) {
                         Text(content: "You must enter exactly four digits (no chars or symbols)!", color: Color::Red)
-                    }
                 }
             }.print();
             continue;
@@ -93,20 +106,37 @@ fn main() {
 
         // TODO: 
         // remove this lines
-        println!("You entered: {}{}{}{}", guess[0], guess[1], guess[2], guess[3]);
+        // println!("You entered: {}{}{}{}", guess[0], guess[1], guess[2], guess[3]);
 
         // Run the calculation routine above and print the coloured blocks
         let result = calc_green_and_yellow(&secret, &guess);
-        println!("{}", result);
         attempts += 1;
-        println!("Attempts: {}\n", attempts);
+
         
         // Exit if all the blocks are green
         if result == "🟩🟩🟩🟩" {
-            println!("Congratulations! You've cracked the code in {} attempts!", attempts);
+
+            element! {
+                View(flex_direction: FlexDirection::Column,
+                    border_style: BorderStyle::Single, 
+                    border_color: green_color,
+                    margin: 2,
+                    padding:1) {
+                    Text(content: format!("Congratulations! You've cracked the code in {} attempts!", attempts), color: green_color)
+                }
+            }.print();
             break;
         } else {
-            
+            element! {
+                View(
+                    flex_direction: FlexDirection::Column,
+                    padding:1
+                ) {
+                    View{
+                        Text(content: format!("#{} -> {}", attempts, result))
+                    }
+                }
+            }.print();
         }
     }
     
