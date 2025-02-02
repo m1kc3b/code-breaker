@@ -13,6 +13,7 @@ fn main() {
 
     // Numbers of attempts
     let mut attempts = 0;
+
     // Generate 4 random digits - our 'secret'
     let mut secret: Vec<u8> = Vec::with_capacity(4);
     secret.extend((0..4).map(|_| rand::random_range(0..=9)));
@@ -47,7 +48,7 @@ fn main() {
 
     // TODO:
     // remove this lines
-    println!("==(The secret is: {:?})==", secret);
+    // println!("==(The secret is: {:?})==", secret);
 
     
     loop {
