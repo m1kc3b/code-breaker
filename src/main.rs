@@ -55,7 +55,7 @@ fn main() {
         element! {
             View() {
                 View{
-                    Text(content: "Enter four digits (1-9)", weight: Weight::Bold, color: main_color)
+                    Text(content: "Enter four digits (0-9)", weight: Weight::Bold, color: main_color)
                     Text(content: " or press 'q' to quit", color: Color::DarkGrey)
                 }
             }
