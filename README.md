@@ -10,7 +10,7 @@ The clues:
 
 - 🟥: this number is not in the secret code.
 
-
+## Screenshot
 
 <img src="./images/code-breaker_01.png" alt="">
 
@@ -19,3 +19,11 @@ The clues:
 <img src="./images/code-breaker_03.png" alt="">
 
 <img src="./images/code-breaker_04.png" alt="">
+
+## Installation 
+
+```
+curl -o install.sh https://raw.githubusercontent.com/m1kc3b/code-breaker/main/install.sh
+chmod +x install.sh
+./install.sh
+```
