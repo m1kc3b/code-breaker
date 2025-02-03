@@ -21,6 +21,11 @@ pub fn parse_input(input: &str) -> Vec<u8> {
 
 /// Check the guess against the secret number and return the result
 pub fn check_guess(secret: &[u8], guess: &[u8]) -> String {
+    
+    // TODO: Handle the difficulty of the Game::Level
+    // if self.level == GameLevel::Hard
+    // random the result
+
   let mut result = vec!['🟥'; secret.len()];
   let mut secret_counts = [0; 10];
   let mut guess_counts = [0; 10];

@@ -69,8 +69,8 @@ pub fn help() {
             Text(content: "- 🟥 means code doesn't contain this digit.")
             Text(content: "For example, 🟩🟥🟨🟨 means you've found out 3 of 4 digits but only one is at the good place.")
             Text(content: "")
-            Text(content: "In medium mode, you have 6 digits to guess instead of 4.")
-            Text(content: "In hard mode, you have 8 digits to guess and the clues no longer indicate the position of the good digits.")
+            Text(content: "In medium mode, you have 5 digits to guess instead of 4.")
+            Text(content: "In hard mode, you have 6 digits to guess and the clues no longer indicate the position of the good digits.")
             Text(content: "Ready? Let's play!")
     }
   }.print();

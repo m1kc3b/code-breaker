@@ -5,8 +5,8 @@ use super::results::GameResult;
 #[derive(Copy, Clone)]
 enum GameLevel {
     Easy = 4,
-    Medium = 6,   
-    Hard = 8,
+    Medium = 5,   
+    Hard = 6,
 }
 
 pub struct Game {
@@ -102,6 +102,7 @@ impl Game {
               }
 
               // Check the guess
+              // TODO: handle the difficulty level
               let result = check_guess(&self.secret, &guess);
 
               // Increment the attempts
@@ -113,6 +114,8 @@ impl Game {
                 // TODO: Store the result
                 // self.result.store().unwrap();
                 break;
+
+                // TODO: Ask to play again
               } else {
                 info(format!("#{} -> {}", self.result.attempts, result).as_str());
                 continue;
