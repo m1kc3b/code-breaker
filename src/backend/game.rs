@@ -102,7 +102,6 @@ impl Game {
               }
 
               // Check the guess
-              // TODO: handle the difficulty level
               let result = check_guess(&self.secret, &guess, &level);
 
               // Increment the attempts
