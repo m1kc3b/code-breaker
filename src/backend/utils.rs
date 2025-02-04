@@ -50,7 +50,7 @@ pub fn check_guess(secret: &[u8], guess: &[u8], level: &u8) -> String {
         }
     }
     // Shuffle the result if the level is hard
-    if level == GameLevel::Hard as u8 {
+    if *level == GameLevel::Hard as u8 {
         use rand::prelude::*;
         let mut rng = rand::rng();
         result.shuffle(&mut rng);
