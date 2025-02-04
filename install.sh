@@ -25,7 +25,7 @@ fi
 echo "✅ Dernière version trouvée : $LATEST_RELEASE"
 
 # Construire l'URL du binaire à télécharger
-BINARY_URL="https://github.com/$GITHUB_REPO/releases/download/$LATEST_RELEASE/$BINARY_NAME"
+BINARY_URL="api.github.com/repos/$GITHUB_REPO/tarball/$LATEST_RELEASE"
 
 echo "🔽 Téléchargement de $BINARY_NAME depuis $BINARY_URL..."
 if ! curl -L -o "$BINARY_NAME" "$BINARY_URL"; then
@@ -39,12 +39,25 @@ if [[ ! -f "$BINARY_NAME" ]]; then
     exit 1
 fi
 
+# Créer un dossier temporaire pour l'extraction
+TMP_DIR=$(mktemp -d)
+echo "📂 Extraction dans $TMP_DIR..."
+tar -xzf "$ARCHIVE_NAME" -C "$TMP_DIR" --strip-components=1
+
+# Trouver le fichier binaire dans le dossier extrait
+FOUND_BINARY=$(find "$TMP_DIR" -type f -name "$BINARY_NAME" | head -n 1)
+
+if [[ -z "$FOUND_BINARY" ]]; then
+    echo "❌ Erreur : Aucun fichier binaire '$BINARY_NAME' trouvé après extraction."
+    exit 1
+fi
+
 # Rendre le fichier exécutable
-chmod +x "$BINARY_NAME"
+chmod +x "$FOUND_BINARY"
 
 # Déplacer vers le dossier d'installation
 echo "🚀 Installation de $BINARY_NAME dans $INSTALL_DIR..."
-sudo mv "$BINARY_NAME" "$INSTALL_DIR/"
+sudo mv "$FOUND_BINARY" "$INSTALL_DIR/$BINARY_NAME"
 
 # Créer le fichier de sauvegarde
 if [ ! -d "$RESULT_DIR" ]; then
@@ -62,4 +75,4 @@ if ! echo "$PATH" | grep -q "$INSTALL_DIR"; then
     echo "source ~/.bashrc"
 fi
 
-echo "🎉 Installation terminée ! Essayez d'exécuter '$BINARY_NAME --help' pour tester."
+echo "🎉 Installation terminée !"
