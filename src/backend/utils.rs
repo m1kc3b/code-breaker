@@ -25,7 +25,7 @@ pub fn parse_input(input: &str) -> Vec<u8> {
 }
 
 /// Check the guess against the secret number and return the result
-pub fn check_guess(secret: &[u8], guess: &[u8], level: &u8) -> String {
+pub fn check_guess(secret: &[u8], guess: &[u8], level: u8) -> String {
     let mut result = vec!['🟥'; secret.len()];
     let mut secret_counts = [0; 10];
     let mut guess_counts = [0; 10];
@@ -50,7 +50,7 @@ pub fn check_guess(secret: &[u8], guess: &[u8], level: &u8) -> String {
         }
     }
     // Shuffle the result if the level is hard
-    if *level == GameLevel::Hard as u8 {
+    if level == GameLevel::Hard as u8 {
         use rand::prelude::*;
         let mut rng = rand::rng();
         result.shuffle(&mut rng);
@@ -70,56 +70,56 @@ mod test {
 
     #[test]
     fn all_wrong() {
-        assert_eq!(&check_guess(&[5, 6, 7, 8], &[1, 2, 3, 4]), "🟥🟥🟥🟥");
+        assert_eq!(&check_guess(&[5, 6, 7, 8], &[1, 2, 3, 4], 4), "🟥🟥🟥🟥");
     }
 
     #[test]
     fn all_green() {
-        assert_eq!(&check_guess(&[1, 2, 3, 4], &[1, 2, 3, 4]), "🟩🟩🟩🟩");
+        assert_eq!(&check_guess(&[1, 2, 3, 4], &[1, 2, 3, 4], 4), "🟩🟩🟩🟩");
     }
 
     #[test]
     fn one_wrong() {
-        assert_eq!(&check_guess(&[1, 2, 3, 5], &[1, 2, 3, 4]), "🟩🟩🟩🟥");
+        assert_eq!(&check_guess(&[1, 2, 3, 5], &[1, 2, 3, 4], 4), "🟩🟩🟩🟥");
     }
 
     #[test]
     fn all_yellow() {
-        assert_eq!(&check_guess(&[4, 3, 2, 1], &[1, 2, 3, 4]), "🟨🟨🟨🟨");
+        assert_eq!(&check_guess(&[4, 3, 2, 1], &[1, 2, 3, 4], 4), "🟨🟨🟨🟨");
     }
 
     #[test]
     fn one_wrong_but_duplicate() {
-        assert_eq!(&check_guess(&[1, 2, 3, 1], &[1, 2, 3, 4]), "🟩🟩🟩🟥");
+        assert_eq!(&check_guess(&[1, 2, 3, 1], &[1, 2, 3, 4], 4), "🟩🟩🟩🟥");
     }
 
     #[test]
     fn one_right_others_duplicate() {
-        assert_eq!(&check_guess(&[1, 1, 1, 1], &[1, 2, 3, 4]), "🟩🟥🟥🟥");
+        assert_eq!(&check_guess(&[1, 1, 1, 1], &[1, 2, 3, 4], 4), "🟩🟥🟥🟥");
     }
 
     #[test]
     fn two_right_two_swapped() {
-        assert_eq!(&check_guess(&[1, 2, 2, 2], &[2, 2, 2, 1]), "🟨🟩🟩🟨");
+        assert_eq!(&check_guess(&[1, 2, 2, 2], &[2, 2, 2, 1], 4), "🟨🟩🟩🟨");
     }
 
     #[test]
     fn two_wrong_two_swapped() {
-        assert_eq!(&check_guess(&[1, 3, 3, 2], &[2, 2, 2, 1]), "🟨🟥🟥🟨");
+        assert_eq!(&check_guess(&[1, 3, 3, 2], &[2, 2, 2, 1], 4), "🟨🟥🟥🟨");
     }
 
     #[test]
     fn a_bit_of_everything() {
-        assert_eq!(&check_guess(&[1, 9, 4, 3], &[1, 2, 3, 4]), "🟩🟥🟨🟨");
+        assert_eq!(&check_guess(&[1, 9, 4, 3], &[1, 2, 3, 4], 4), "🟩🟥🟨🟨");
     }
 
     #[test]
     fn two_in_guess_one_in_secret() {
-        assert_eq!(&check_guess(&[1, 2, 3, 3], &[3, 9, 9, 9]), "🟨🟥🟥🟥");
+        assert_eq!(&check_guess(&[1, 2, 3, 3], &[3, 9, 9, 9], 4), "🟨🟥🟥🟥");
     }
 
     #[test]
     fn two_in_secret_one_in_guess() {
-        assert_eq!(&check_guess(&[1, 2, 3, 4], &[3, 3, 9, 9]), "🟨🟥🟥🟥");
+        assert_eq!(&check_guess(&[1, 2, 3, 4], &[3, 3, 9, 9], 4), "🟨🟥🟥🟥");
     }
 }

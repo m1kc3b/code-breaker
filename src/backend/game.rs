@@ -102,7 +102,7 @@ impl Game {
               }
 
               // Check the guess
-              let result = check_guess(&self.secret, &guess, &level);
+              let result = check_guess(&self.secret, &guess, level);
 
               // Increment the attempts
               self.result.attempts += 1;
