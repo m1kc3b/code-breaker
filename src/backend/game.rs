@@ -2,8 +2,8 @@ use super::display::*;
 use super::utils::{check_guess, generate_secret, parse_input, read_input};
 use super::results::GameResult;
 
-#[derive(Copy, Clone)]
-enum GameLevel {
+#[derive(Copy, Clone, PartialEq, Eq)]
+pub enum GameLevel {
     Easy = 4,
     Medium = 5,   
     Hard = 6,
@@ -103,7 +103,7 @@ impl Game {
 
               // Check the guess
               // TODO: handle the difficulty level
-              let result = check_guess(&self.secret, &guess);
+              let result = check_guess(&self.secret, &guess, &level);
 
               // Increment the attempts
               self.result.attempts += 1;
