@@ -23,7 +23,7 @@ The clues:
 ## Installation 
 
 ```
-curl -o install.sh https://raw.githubusercontent.com/m1kc3b/code-breaker/main/install.sh
+curl -o install.sh https://raw.githubusercontent.com/m1kc3b/code-breaker/master/install.sh
 chmod +x install.sh
 ./install.sh
 ```
