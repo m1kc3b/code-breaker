@@ -1,78 +1,58 @@
 #!/bin/bash
 
-set -e  # Arrêter le script en cas d'erreur
+# Define variables
+REPO="m1kc3b/code-breaker"
+EXEC_NAME="code-breaker"
 
-# Nom du dépôt et du binaire
-GITHUB_REPO="m1kc3b/code-breaker"  # Remplacez par votre repo GitHub
-BINARY_NAME="code-breaker"         # Nom du fichier binaire
-INSTALL_DIR="/usr/local/bin"       # Dossier d'installation
-RESULT_DIR="$HOME/.code-breaker"   # Dossier de sauvegarde
+# 1. Fetch the latest version from GitHub releases
+API_URL="https://api.github.com/repos/$REPO/releases/latest"
+LATEST_RELEASE=$(curl -s "$API_URL")
+LATEST_VERSION=$(echo "$LATEST_RELEASE" | jq -r '.tag_name')
 
-# Vérifier si `jq` est installé
-if ! command -v jq &> /dev/null; then
-    echo "Erreur : 'jq' n'est pas installé. Installez-le avec 'sudo apt install jq' (Debian/Ubuntu) ou 'sudo yum install jq' (RHEL)."
-    exit 1
+# 2. Check if a version is already installed
+if command -v "$EXEC_NAME" &> /dev/null; then
+  INSTALLED_VERSION="$("$EXEC_NAME" --version 2>/dev/null | grep -oE '[0-9.]+$')" # Extract version number
+else
+  INSTALLED_VERSION=""
 fi
 
-# Détecter la dernière version publiée sur GitHub
-LATEST_RELEASE=$(curl -s "https://api.github.com/repos/$GITHUB_REPO/releases/latest" | jq -r '.tag_name')
-
-if [[ -z "$LATEST_RELEASE" || "$LATEST_RELEASE" == "null" ]]; then
-    echo "❌ Erreur : Impossible de récupérer la dernière version."
-    exit 1
+# 3. Compare versions
+if [[ -z "$INSTALLED_VERSION" ]]; then
+  echo "No version installed. Installing latest version: $LATEST_VERSION"
+elif [[ "$INSTALLED_VERSION" == "$LATEST_VERSION" ]]; then
+  echo "✅ Latest version ($LATEST_VERSION) already installed."
+  exit 0
+else
+  echo " Installed version: $INSTALLED_VERSION, latest version: $LATEST_VERSION"
+  read -p "❓ Do you want to update to the latest version (yes/no)? " UPDATE
+  if [[ "$UPDATE" != "yes" ]]; then
+    echo " Update cancelled."
+    exit 0
+  fi
 fi
 
-echo "✅ Dernière version trouvée : $LATEST_RELEASE"
+# 4. Download and install the latest version
+RELEASE_URL="https://github.com/m1kc3b/code-breaker/releases/download/$LATEST_VERSION/$EXEC_NAME"
+echo "🔽 Downloading version $LATEST_VERSION..."
+curl -L -o "$EXEC_NAME" "$RELEASE_URL"
 
-# Construire l'URL du binaire à télécharger
-BINARY_URL="api.github.com/repos/$GITHUB_REPO/tarball/$LATEST_RELEASE"
-
-echo "🔽 Téléchargement de $BINARY_NAME depuis $BINARY_URL..."
-if ! curl -L -o "$BINARY_NAME" "$BINARY_URL"; then
-    echo "❌ Erreur : Échec du téléchargement."
-    exit 1
+# Check if the download was successful
+if [[ $? -ne 0 ]]; then
+  echo "❌ Error: Failed to download the executable."
+  exit 1
 fi
 
-# Vérifier si le fichier a bien été téléchargé
-if [[ ! -f "$BINARY_NAME" ]]; then
-    echo "❌ Erreur : Le fichier binaire n'a pas été trouvé après le téléchargement."
-    exit 1
-fi
+# Set execution permissions
+chmod +x "$EXEC_NAME"
 
-# Créer un dossier temporaire pour l'extraction
-TMP_DIR=$(mktemp -d)
-echo "📂 Extraction dans $TMP_DIR..."
-tar -xzf "$ARCHIVE_NAME" -C "$TMP_DIR" --strip-components=1
+# Install
+echo "🚀 Installing $EXEC_NAME in /usr/local/bin..."
+sudo mv "$EXEC_NAME" "/usr/local/bin/$EXEC_NAME"
 
-# Trouver le fichier binaire dans le dossier extrait
-FOUND_BINARY=$(find "$TMP_DIR" -type f -name "$BINARY_NAME" | head -n 1)
+# Create a hidden directory and results.txt file
+HIDDEN_DIR="$HOME/.code-breaker"
+mkdir -p "$HIDDEN_DIR"
+touch "$HIDDEN_DIR/results.txt"
+echo "📁 Creating the backup folder..."
 
-if [[ -z "$FOUND_BINARY" ]]; then
-    echo "❌ Erreur : Aucun fichier binaire '$BINARY_NAME' trouvé après extraction."
-    exit 1
-fi
-
-# Rendre le fichier exécutable
-chmod +x "$FOUND_BINARY"
-
-# Déplacer vers le dossier d'installation
-echo "🚀 Installation de $BINARY_NAME dans $INSTALL_DIR..."
-sudo mv "$FOUND_BINARY" "$INSTALL_DIR/$BINARY_NAME"
-
-# Créer le fichier de sauvegarde
-if [ ! -d "$RESULT_DIR" ]; then
-    echo "📁 Création du dossier de sauvegarde $RESULT_DIR..."
-    mkdir "$RESULT_DIR"
-fi
-
-chmod 700 "$RESULT_DIR"
-touch "$RESULT_DIR/results.txt"
-
-# Vérifier si le dossier est dans le PATH
-if ! echo "$PATH" | grep -q "$INSTALL_DIR"; then
-    echo "➕ Ajout de $INSTALL_DIR au PATH..."
-    echo 'export PATH="$INSTALL_DIR:$PATH"' >> ~/.bashrc
-    echo "source ~/.bashrc"
-fi
-
-echo "🎉 Installation terminée !"
+echo "🎉 Installation completed. Run '$EXEC_NAME' to start the application."
