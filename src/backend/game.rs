@@ -1,6 +1,8 @@
 use super::display::*;
 use super::utils::{check_guess, generate_secret, parse_input, read_input};
 use super::results::GameResult;
+use iocraft::prelude::*;
+use std::process::exit;
 
 #[derive(Copy, Clone, PartialEq, Eq)]
 pub enum GameLevel {
@@ -56,11 +58,11 @@ impl Game {
             continue;
           },
           "h" => {
-            help();
+            game.help();
             continue;
           },
           "q" => {
-            quit(&game.secret, &game.result.attempts);
+            game.quit();
             break;
           },
           _ => {
@@ -85,11 +87,11 @@ impl Game {
           // Match the input
           match input.as_str() {
             "h" => {
-              help();
+              self.help();
               continue;
             },
             "q" => {
-              quit(&self.secret, &self.result.attempts);
+              self.quit();
               break;
             },
             _ => {
@@ -122,6 +124,45 @@ impl Game {
             }
           }
       }
+    }
+
+    fn help(&self) {
+      element! {
+        View(flex_direction: FlexDirection::Column) {
+                Text(content: "The rules of this game are simple: Guessing the code as fast as possible!")
+                Text(content: "In easy mode, you have 4 digits to guess.")
+                Text(content: "After each attempt we will provide you a clue:")
+                Text(content: "- 🟩 means good digit and at the right place.")
+                Text(content: "- 🟨 means code contains this digit.")
+                Text(content: "- 🟥 means code doesn't contain this digit.")
+                Text(content: "For example, 🟩🟥🟨🟨 means you've found out 3 of 4 digits but only one is at the good place.")
+                Text(content: "")
+                Text(content: "In medium mode, you have 5 digits to guess instead of 4.")
+                Text(content: "In hard mode, you have 6 digits to guess and the clues no longer indicate the position of the good digits.")
+                Text(content: "Ready? Let's play!")
+        }
+      }.print();
+    }
+    
+    fn quit(&self) {
+      let secret = &self.secret;
+      let attempts = self.result.attempts;
+      element! {
+          View(
+              flex_direction: FlexDirection::Column,
+              border_style: BorderStyle::Single, 
+              border_color: Color::AnsiValue(208),
+              padding: 1,
+              margin: 1,
+          ) {
+                  Text(content: "Quitting...", color: Color::AnsiValue(154), weight: Weight::Bold)
+                  Text(content: format!("The secret was {}{}{}{}\n", secret[0], secret[1], secret[2], secret[3]), color: Color::AnsiValue(208))
+                  Text(content: format!("You've made {} attempts\n", attempts), color: Color::AnsiValue(208))
+                  Text(content: "Goodbye 👋👋👋", color: Color::AnsiValue(208))
+              }
+      }.print();
+      // Exit
+      exit(1);
     }
 
   }
