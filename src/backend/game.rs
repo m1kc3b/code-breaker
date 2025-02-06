@@ -62,8 +62,8 @@ impl Game {
             continue;
           },
           "q" => {
-            game.quit();
-            break;
+            println!("Goodbye 👋👋👋");
+            exit(0);
           },
           _ => {
             error("Unknow command!");
